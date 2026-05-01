@@ -5,28 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fabric Mod 模板生成器</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <style>
-        * { box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 650px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
-        h1 { color: #333; text-align: center; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .card-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-        input:disabled, select:disabled { background: #eee; color: #999; }
-        input[type="checkbox"] { width: auto; margin-right: 8px; }
-        .checkbox-group { display: flex; align-items: center; }
-        button { width: 100%; padding: 14px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: 500; }
-        button:hover { background: #45a049; }
-        button:disabled { background: #ccc; }
-        .version-info { background: #e8f5e9; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 13px; }
-        #status { margin-top: 15px; padding: 12px; border-radius: 4px; display: none; }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-        .row { display: flex; gap: 10px; }
-        .row .form-group { flex: 1; }
-    </style>
+    <link href="./global.css" rel="stylesheet">
 </head>
 <body>
     <h1>Fabric Mod 模板生成器</h1>
@@ -38,22 +17,22 @@
         
         <div class="form-group">
             <label>Mod 名称 (name)</label>
-            <input type="text" id="modName" value="My Fabric Mod" placeholder="显示名称">
+            <label for="modName"></label><input type="text" id="modName" value="My Fabric Mod" placeholder="显示名称">
         </div>
         
         <div class="form-group">
             <label>Mod ID (id)</label>
-            <input type="text" id="modId" value="my-fabric-mod" placeholder="唯一标识符">
+            <label for="modId"></label><input type="text" id="modId" value="my-fabric-mod" placeholder="唯一标识符">
         </div>
         
         <div class="form-group">
             <label>作者 (author)</label>
-            <input type="text" id="author" value="YourName" placeholder="作者名称">
+            <label for="author"></label><input type="text" id="author" value="YourName" placeholder="作者名称">
         </div>
         
         <div class="form-group">
             <label>Java 包名 (package name)</label>
-            <input type="text" id="packageName" value="com.example.mymod" placeholder="例如：com.example.mymod">
+            <label for="packageName"></label><input type="text" id="packageName" value="com.example.mymod" placeholder="例如：com.example.mymod">
         </div>
     </div>
     
@@ -63,7 +42,7 @@
         <div class="row">
             <div class="form-group">
                 <label>Minecraft 版本</label>
-                <select id="minecraftVersion">
+                <label for="minecraftVersion"></label><select id="minecraftVersion">
                     <option value="1.21.1">1.21.1</option>
                     <option value="1.21">1.21</option>
                     <option value="1.20.4" selected>1.20.4</option>
@@ -80,7 +59,7 @@
             </div>
             <div class="form-group">
                 <label>Fabric Loader</label>
-                <select id="loaderVersion">
+                <label for="loaderVersion"></label><select id="loaderVersion">
                     <option value="0.15.11" selected>0.15.11</option>
                     <option value="0.15.10">0.15.10</option>
                     <option value="0.15.9">0.15.9</option>
@@ -91,13 +70,13 @@
         <div class="row">
             <div class="form-group">
                 <label>映射版本 (Yarn)</label>
-                <select id="yarnVersion">
+                <label for="yarnVersion"></label><select id="yarnVersion">
                     <option value="">加载中...</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Fabric API</label>
-                <select id="apiVersion">
+                <label for="apiVersion"></label><select id="apiVersion">
                     <option value="">加载中...</option>
                 </select>
             </div>
@@ -105,7 +84,7 @@
         
         <div class="form-group">
             <label>映射类型 (Mappings)</label>
-            <select id="mappingType">
+            <label for="mappingType"></label><select id="mappingType">
                 <option value="yarn" selected>Yarn (推荐)</option>
                 <option value="mojang">Mojang</option>
             </select>
@@ -129,7 +108,7 @@
     <div class="card">
         <div class="form-group">
             <label>描述</label>
-            <input type="text" id="description" value="A Fabric mod" placeholder="Mod 描述">
+            <label for="description"></label><input type="text" id="description" value="A Fabric mod" placeholder="Mod 描述">
         </div>
         
         <button id="generateBtn" onclick="generateTemplate()">生成模板</button>
@@ -137,409 +116,7 @@
         <div id="status"></div>
     </div>
 
-    <script>
-        // Store categorized versions
-        var categorizedYarn = {};
-        var categorizedApi = {};
-        var allLoaderVersions = [];
-        
-        // Yarn versions cache
-        var YARN_VERSIONS = {
-            '1.21.1': '1.21.1+build.3-v2',
-            '1.21': '1.21+build.1-v2',
-            '1.20.4': '1.20.4+build.8-v2',
-            '1.20.2': '1.20.2+build.4-v2',
-            '1.20.1': '1.20.1+build.1-v2',
-            '1.19.4': '1.19.4+build.8-v2',
-            '1.19.3': '1.19.3+build.4-v2',
-            '1.18.2': '1.18.2+build.4-v2',
-            '1.17.1': '1.17.1+build.4-v2',
-            '1.16.5': '1.16.5+build.6-v2',
-            '1.15.2': '1.15.2+build.2-v2',
-            '1.14.4': '1.14.4+build.3-v2'
-        };
-        
-        var MOJANG_VERSIONS = {
-            '1.21.1': '1.21.1+stable',
-            '1.21': '1.21+stable',
-            '1.20.4': '1.20.4+stable',
-            '1.20.2': '1.20.2+stable',
-            '1.20.1': '1.20.1+stable',
-            '1.19.4': '1.19.4+stable',
-            '1.19.3': '1.19.3+stable',
-            '1.18.2': '1.18.2+stable',
-            '1.17.1': '1.17.1+stable',
-            '1.16.5': '1.16.5+stable',
-            '1.15.2': '1.15.2+stable',
-            '1.14.4': '1.14.4+stable'
-        };
-        
-        // Categorize Yarn versions by Minecraft version (exact match: 1.20.4 -> 1.20.4)
-        function categorizeYarnVersions(versions) {
-            var categorized = {};
-            
-            versions.forEach(function(v) {
-                var match = v.match(/^(\d+\.\d+\.\d+)/);
-                if (match) {
-                    var mcVersion = match[1];
-                    if (!categorized[mcVersion]) {
-                        categorized[mcVersion] = [];
-                    }
-                    categorized[mcVersion].push(v);
-                }
-            });
-            
-            for (var mc in categorized) {
-                categorized[mc].sort(function(a, b) {
-                    var buildA = parseInt(a.match(/build\.(\d+)/)?.[1] || 0);
-                    var buildB = parseInt(b.match(/build\.(\d+)/)?.[1] || 0);
-                    return buildB - buildA;
-                });
-            }
-            
-            return categorized;
-        }
-        
-        // Categorize API versions by Minecraft version (exact match)
-        function categorizeApiVersions(versions) {
-            var categorized = {};
-            
-            versions.forEach(function(v) {
-                var match = v.match(/\+(\d+\.\d+\.\d+)/);
-                if (match) {
-                    var mcVersion = match[1];
-                    if (!categorized[mcVersion]) {
-                        categorized[mcVersion] = [];
-                    }
-                    categorized[mcVersion].push(v);
-                }
-            });
-            
-            for (var mc in categorized) {
-                categorized[mc].sort(function(a, b) {
-                    var numA = parseInt(a.split('+')[0].replace(/\./g, '')) || 0;
-                    var numB = parseInt(b.split('+')[0].replace(/\./g, '')) || 0;
-                    return numB - numA;
-                });
-            }
-            
-            return categorized;
-        }
-        
-        // Update Yarn select options
-        function updateYarnSelect(versions) {
-            var yarnSelect = document.getElementById('yarnVersion');
-            yarnSelect.innerHTML = '';
-            
-            if (versions.length === 0) {
-                yarnSelect.innerHTML = '<option value="">无匹配版本</option>';
-                return;
-            }
-            
-            versions.forEach(function(v) {
-                var option = document.createElement('option');
-                option.value = v;
-                option.textContent = v;
-                yarnSelect.appendChild(option);
-            });
-        }
-        
-        // Update API select options
-        function updateApiSelect(versions) {
-            var apiSelect = document.getElementById('apiVersion');
-            apiSelect.innerHTML = '';
-            
-            if (versions.length === 0) {
-                apiSelect.innerHTML = '<option value="">无匹配版本</option>';
-                return;
-            }
-            
-            versions.forEach(function(v) {
-                var option = document.createElement('option');
-                option.value = v;
-                option.textContent = v;
-                apiSelect.appendChild(option);
-            });
-        }
-        
-        // Update Loader select with all versions
-        function updateLoaderSelect(versions, latestVersion) {
-            var loaderSelect = document.getElementById('loaderVersion');
-            loaderSelect.innerHTML = '';
-            
-            // Sort versions (newest first)
-            versions.sort(function(a, b) {
-                var partsA = a.split('.').map(Number);
-                var partsB = b.split('.').map(Number);
-                for (var i = 0; i < partsA.length; i++) {
-                    if (partsB[i] === undefined) return -1;
-                    if (partsA[i] > partsB[i]) return -1;
-                    if (partsA[i] < partsB[i]) return 1;
-                }
-                return 1;
-            });
-            
-            versions.forEach(function(v) {
-                var option = document.createElement('option');
-                option.value = v;
-                option.textContent = v + (v === latestVersion ? ' (最新)' : '');
-                if (v === latestVersion) {
-                    option.selected = true;
-                }
-                loaderSelect.appendChild(option);
-            });
-        }
-        
-        // Handle mapping type change
-        function handleMappingTypeChange() {
-            var mappingType = document.getElementById('mappingType').value;
-            var yarnSelect = document.getElementById('yarnVersion');
-            
-            if (mappingType === 'mojang') {
-                yarnSelect.disabled = true;
-                yarnSelect.innerHTML = '<option value="">Mojang映射无需Yarn版本</option>';
-            } else {
-                yarnSelect.disabled = false;
-                var mcVersion = document.getElementById('minecraftVersion').value;
-                updateYarnSelect(categorizedYarn[mcVersion] || []);
-            }
-        }
-        
-        // Fetch all versions and categorize them
-        async function fetchAllVersions() {
-            try {
-                // Fetch Yarn versions
-                var yarnResponse = await fetch('https://maven.fabricmc.net/net/fabricmc/yarn/maven-metadata.xml');
-                var yarnText = await yarnResponse.text();
-                var yarnVersions = [];
-                var match;
-                var yarnRegex = /<version>([^<]+)<\/version>/g;
-                while ((match = yarnRegex.exec(yarnText))) {
-                    yarnVersions.push(match[1]);
-                }
-                categorizedYarn = categorizeYarnVersions(yarnVersions);
-                
-                // Fetch API versions
-                var apiResponse = await fetch('https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/maven-metadata.xml');
-                var apiText = await apiResponse.text();
-                var apiVersions = [];
-                var apiRegex = /<version>([^<]+)<\/version>/g;
-                while ((match = apiRegex.exec(apiText))) {
-                    apiVersions.push(match[1]);
-                }
-                categorizedApi = categorizeApiVersions(apiVersions);
-                
-                // Fetch ALL Loader versions
-                var loaderResponse = await fetch('https://maven.fabricmc.net/net/fabricmc/fabric-loader/maven-metadata.xml');
-                var loaderText = await loaderResponse.text();
-                var loaderVersions = [];
-                var loaderRegex = /<version>([^<]+)<\/version>/g;
-                while ((match = loaderRegex.exec(loaderText))) {
-                    loaderVersions.push(match[1]);
-                }
-                allLoaderVersions = loaderVersions;
-                
-                var latestLoaderMatch = loaderText.match(/<latest>([^<]+)<\/latest>/);
-                var latestLoader = latestLoaderMatch ? latestLoaderMatch[1] : '0.15.11';
-                
-                // Update Loader select with ALL versions
-                updateLoaderSelect(loaderVersions, latestLoader);
-                
-                // Get default MC version
-                var mcVersion = document.getElementById('minecraftVersion').value;
-                
-                // Update Yarn and API selects with exact match
-                updateYarnSelect(categorizedYarn[mcVersion] || []);
-                updateApiSelect(categorizedApi[mcVersion] || []);
-                
-                // Update display
-                var defaultApi = categorizedApi[mcVersion]?.[0] || '0.100.1+1.20.4';
-                document.getElementById('defaultVersions').textContent = 
-                    'Minecraft ' + mcVersion + ' | Fabric Loader ' + latestLoader + ' | Fabric API ' + defaultApi;
-                
-                return { loader: latestLoader };
-            } catch (e) {
-                console.error('Failed to fetch versions:', e);
-                document.getElementById('defaultVersions').textContent = 'Minecraft 1.20.4 (使用缓存)';
-                
-                var mcVersion = document.getElementById('minecraftVersion').value;
-                updateYarnSelect([YARN_VERSIONS[mcVersion] || '1.20.4+build.8-v2']);
-                updateApiSelect(['0.100.1+1.20.4']);
-                updateLoaderSelect(['0.15.11', '0.15.10', '0.15.9'], '0.15.11');
-                
-                return { loader: '0.15.11' };
-            }
-        }
-        
-        // Initialize on page load
-        var latestVersions = fetchAllVersions();
-        
-        // When Minecraft version changes, update Yarn and API versions
-        document.getElementById('minecraftVersion').addEventListener('change', function() {
-            var mcVersion = this.value;
-            var mappingType = document.getElementById('mappingType').value;
-            
-            if (mappingType === 'yarn') {
-                updateYarnSelect(categorizedYarn[mcVersion] || [YARN_VERSIONS[mcVersion]]);
-            }
-            updateApiSelect(categorizedApi[mcVersion] || ['0.100.1+' + mcVersion]);
-        });
-        
-        // When mapping type changes, handle Yarn select enable/disable
-        document.getElementById('mappingType').addEventListener('change', handleMappingTypeChange);
-
-        function showStatus(msg, isError) {
-            isError = isError || false;
-            var el = document.getElementById('status');
-            el.textContent = msg;
-            el.className = isError ? 'error' : 'success';
-            el.style.display = 'block';
-        }
-        
-        function sanitizePackageName(name) {
-            return name.toLowerCase()
-                .replace(/[^a-z0-9.]/g, '_')
-                .replace(/__+/g, '_')
-                .replace(/^\.|\.$/g, '') || 'com.example.mod';
-        }
-
-        async function generateTemplate() {
-            var btn = document.getElementById('generateBtn');
-            var modName = document.getElementById('modName').value.trim() || 'MyMod';
-            var modId = document.getElementById('modId').value.trim() || 'mymod';
-            var author = document.getElementById('author').value.trim() || 'YourName';
-            var packageName = sanitizePackageName(document.getElementById('packageName').value.trim()) || 'com.example.mymod';
-            var description = document.getElementById('description').value.trim() || 'A Fabric mod';
-            var mcVersion = document.getElementById('minecraftVersion').value;
-            var loaderVersion = document.getElementById('loaderVersion').value;
-            var yarnVersion = document.getElementById('yarnVersion').value;
-            var apiVersion = document.getElementById('apiVersion').value;
-            var mappingType = document.getElementById('mappingType').value;
-            var enableDataGen = document.getElementById('enableDataGen').checked;
-            var separateClientServer = document.getElementById('separateClientServer').checked;
-            
-            // Use selected mapping version
-            var mappings = mappingType === 'yarn' ? (yarnVersion || YARN_VERSIONS[mcVersion]) : MOJANG_VERSIONS[mcVersion];
-            var mappingsRepo = mappingType === 'yarn' ? 'net.fabricmc:yarn' : 'net.fabricmc:mojang';
-            
-            // Use selected API version
-            var fabricApi = apiVersion || '0.100.1+' + mcVersion;
-            var packagePath = packageName.replace(/\./g, '/');
-            
-            btn.disabled = true;
-            btn.textContent = '生成中...';
-            
-            try {
-                var zip = new JSZip();
-                
-                // Gradle Wrapper
-                zip.file('gradlew', '#!/bin/sh\njava -jar "$0/../gradle/wrapper/gradle-wrapper.jar" "$@"');
-                zip.file('gradlew.bat', '@echo off\njava -jar "%~dp0gradle\\wrapper\\gradle-wrapper.jar" %*');
-                zip.file('gradle/wrapper/gradle-wrapper.properties', 
-                    'distributionBase=GRADLE_USER_HOME\ndistributionPath=wrapper/dists\ndistributionUrl=https\\://services.gradle.org/distributions/gradle-9.3.0-bin.zip\nnetworkTimeout=10000\nvalidateDistributionUrl=true\nzipStoreBase=GRADLE_USER_HOME\nzipStorePath=wrapper/dists');
-                
-                // build.gradle
-                var dataGenConfig = '';
-                if (enableDataGen) {
-                    dataGenConfig = '\n\nloom {\n    generateSources = true\n}\n\ntasks.withType(JavaSourceSet).configureEach {\n    source srcGenerated.main\n}';
-                }
-                
-                var runConfig = '';
-                if (separateClientServer) {
-                    runConfig = '\nminecraft {\n    runs {\n        client {\n            workingDirectory = file("run")\n            property "mixin.env.remapRefMap", "true"\n            modSource sourceSets.main\n        }\n        server {\n            workingDirectory = file("run")\n            property "mixin.env.remapRefMap", "true"\n            modSource sourceSets.main\n        }\n    }\n}';
-                } else {
-                    runConfig = '\nminecraft {\n    runs {\n        client { workingDirectory = file(\'run\') }\n        server { workingDirectory = file(\'run\') }\n    }\n}';
-                }
-                
-                zip.file('build.gradle', 'plugins {\n    id \'fabric-loom\' version \'' + loaderVersion + '\'\n    id \'maven-publish\'\n}\n\nversion = \'1.0.0\'\ngroup = \'' + packageName + '\'\narchivesBaseName = \'' + modId + '\'\n\njava {\n    sourceCompatibility = JavaVersion.VERSION_17\n    targetCompatibility = JavaVersion.VERSION_17\n}' + runConfig + '\n\ndependencies {\n    minecraft "com.mojang:minecraft:' + mcVersion + '"\n    mappings "' + mappingsRepo + ':' + mappings + ':v2"\n    modImplementation "net.fabricmc:fabric-loader:' + loaderVersion + '"\n    modImplementation "net.fabricmc.fabric-api:fabric-api:' + fabricApi + '"\n}' + dataGenConfig + '\n\nprocessResources {\n    inputs.property "version", project.version\n    filesMatching("fabric.mod.json") {\n        expand "version": project.version\n    }\n}\n\ntasks.withType(JavaCompile).configureEach {\n    options.encoding = "UTF-8"\n}\n\npublishing {\n    publications {\n        mavenJava(MavenPublication) {\n            artifact jar\n        }\n    }\n}\n');
-                
-                // settings.gradle
-                zip.file('settings.gradle', 'pluginManagement {\n    repositories {\n        maven { name = \'Fabric\'; url = \'https://maven.fabricmc.net/\' }\n        maven { name = \'Fabric Modules\'; url = \'https://maven.fabricmc.net/modules/\' }\n        gradlePluginPortal()\n    }\n}\n\nplugins {\n    id \'org.gradle.toolchains.foojay-resolver-convention\' version \'0.5.0\'\n}\n\nrootProject.name = \'' + modName + '\'\n');
-                
-                // gradle.properties
-                zip.file('gradle.properties', 'org.gradle.jvmargs=-Xmx4G\norg.gradle.parallel=true\norg.gradle.caching=true\n\nminecraft_version=' + mcVersion + '\nyarn_mappings=' + mappings + '\nloader_version=' + loaderVersion + '\nmod_version=1.0.0\nmaven_group=' + packageName + '\narchives_base_name=' + modId + '\nfabric_api_version=' + fabricApi + '\n');
-                
-                // fabric.mod.json
-                var fabricModJson = {
-                    schemaVersion: 1,
-                    id: modId,
-                    version: '1.0.0',
-                    name: modName,
-                    description: description,
-                    authors: [author],
-                    contact: {
-                        homepage: 'https://fabricmc.net/',
-                        sources: 'https://github.com/FabricMC/fabric-example-mod'
-                    },
-                    license: 'CC0-1.0',
-                    icon: 'assets/icon.png',
-                    environment: '*',
-                    entrypoints: {
-                        main: [packageName + '.ExampleMod']
-                    },
-                    depends: {
-                        fabricloader: '>=' + loaderVersion,
-                        minecraft: mcVersion,
-                        java: '>=17'
-                    }
-                };
-                
-                if (separateClientServer) {
-                    fabricModJson.mixins = [modId + '.mixins.json'];
-                    fabricModJson.client = [packageName + '.mixin.ClientModMixin'];
-                }
-                
-                zip.file('src/main/resources/fabric.mod.json', JSON.stringify(fabricModJson, null, 2));
-                
-                // Main Mod Class
-                zip.file('src/main/java/' + packagePath + '/ExampleMod.java', 'package ' + packageName + ';\n\nimport net.fabricmc.api.ModInitializer;\nimport org.slf4j.Logger;\nimport org.slf4j.LoggerFactory;\n\npublic class ExampleMod implements ModInitializer {\n    public static final Logger LOGGER = LoggerFactory.getLogger("' + modId + '");\n\n    @Override\n    public void onInitialize() {\n        LOGGER.info("' + modName + ' has initialized!");\n    }\n}\n');
-                
-                // Mixin config
-                if (separateClientServer) {
-                    var mixinClassName = 'ClientModMixin';
-                    zip.file('src/main/java/' + packagePath + '/mixin/' + mixinClassName + '.java', 'package ' + packageName + '.mixin;\n\nimport net.fabricmc.api.Environment;\nimport net.fabricmc.api.EnvType;\nimport org.spongepowered.asm.mixin.Mixin;\nimport org.spongepowered.asm.mixin.injection.At;\nimport org.spongepowered.asm.mixin.injection.Inject;\n\n@Mixin(targets = "net.minecraft.client.MinecraftClient")\npublic class ' + mixinClassName + ' {\n    \n    @Inject(method = "run", at = @At("HEAD"))\n    private void onRun(CallbackInfo ci) {\n        System.out.println("' + modName + ' - Client side initialization");\n    }\n}\n');
-                    
-                    zip.file('src/main/resources/' + modId + '.mixins.json', JSON.stringify({
-                        required: true,
-                        minVersion: "0.8",
-                        package: packageName + '.mixin',
-                        compatibilityLevel: "JAVA_17",
-                        mixins: [],
-                        client: [packageName + '.mixin.' + mixinClassName],
-                        injectors: {
-                            defaultRequire: 1
-                        }
-                    }, null, 2));
-                }
-                
-                // Access Widener
-                zip.file('src/main/resources/' + modId + '.accesswidener', 'accesswidener ' + packagePath + '/ExampleMod wide\n');
-                
-                // .gitignore
-                zip.file('.gitignore', '.gradle/\nbuild/\n!gradle-wrapper.jar\n!gradle-wrapper.properties\n\n.idea/\n*.iml\n.vscode/\n\n.DS_Store\nThumbs.db\n\n*.log\n\nrun/\n');
-                
-                // README
-                zip.file('README.md', '# ' + modName + '\n\n' + description + '\n\n## 信息\n- **Minecraft**: ' + mcVersion + '\n- **Loader**: ' + loaderVersion + '\n- **Mappings**: ' + (mappingType === 'yarn' ? 'Yarn' : 'Mojang') + '\n- **Package**: ' + packageName + '\n\n## 构建\n```bash\n./gradlew build\n```\n\n## 运行\n```bash\n./gradlew runClient\n./gradlew runServer\n```\n');
-                
-                // Generate and download
-                var blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 9 } });
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = modId + '-' + mcVersion + '.zip';
-                a.click();
-                URL.revokeObjectURL(url);
-                
-                showStatus('模板生成成功！(' + modId + '-' + mcVersion + '.zip)');
-            } catch (e) {
-                showStatus('生成失败: ' + e.message, true);
-                console.error(e);
-            }
-            
-            btn.disabled = false;
-            btn.textContent = '生成模板';
-        }
-    </script>
+    <script src="./main.js"></script>
 </body>
 </html>
 
